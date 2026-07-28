@@ -296,9 +296,78 @@
   <section id="iletisim" class="final">
     <div class="wrap">
       <div class="final-box reveal">
+        <style>
+          .form-wrap { max-width:720px; margin:40px auto 0; text-align:left; }
+          .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+          @media (max-width:620px){ .form-grid { grid-template-columns:1fr; } }
+          .field { display:flex; flex-direction:column; gap:8px; }
+          .field.full { grid-column:1 / -1; }
+          .field label { font-size:13px; color:var(--muted); letter-spacing:0.02em; }
+          .field input, .field select, .field textarea {
+            width:100%; background:var(--card); border:1px solid var(--border); border-radius:12px;
+            color:var(--text); font-family:'Inter',sans-serif; font-size:15px; padding:13px 15px;
+            transition:border-color .2s ease, box-shadow .2s ease;
+          }
+          .field textarea { resize:vertical; min-height:120px; }
+          .field input:focus, .field select:focus, .field textarea:focus {
+            outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(224,169,74,0.12);
+          }
+          .field select { appearance:none; cursor:pointer; }
+          .form-submit { grid-column:1 / -1; display:flex; justify-content:center; margin-top:6px; }
+          .form-note { grid-column:1 / -1; text-align:center; color:var(--muted); font-size:13px; margin-top:4px; }
+          .form-ok { grid-column:1 / -1; text-align:center; color:var(--gold-soft); font-size:15px; display:none; margin-top:8px; }
+        </style>
         <h2>İşletmeniz, hak ettiği<br><span class="gold">dijital yeri</span> bekliyor.</h2>
-        <p>Kısa bir keşif görüşmesinde hedeflerinizi konuşalım; size en uygun yolu net bir şekilde çıkaralım.</p>
-        <button class="btn-gold" onclick="location.href='mailto:bilgi@mustafakelleci.com'">Hemen Başlayalım</button>
+        <p>Aşağıdaki formu doldurun; projenizi değerlendirip size en uygun yolu net bir şekilde çıkaralım.</p>
+        <form class="form-wrap" id="teklifForm">
+          <div class="form-grid">
+            <div class="field">
+              <label for="ad">Ad Soyad *</label>
+              <input type="text" id="ad" name="ad" placeholder="Adınız Soyadınız" required>
+            </div>
+            <div class="field">
+              <label for="firma">İşletme / Firma</label>
+              <input type="text" id="firma" name="firma" placeholder="Firma adı (opsiyonel)">
+            </div>
+            <div class="field">
+              <label for="email">E-posta *</label>
+              <input type="email" id="email" name="email" placeholder="ornek@eposta.com" required>
+            </div>
+            <div class="field">
+              <label for="telefon">Telefon</label>
+              <input type="tel" id="telefon" name="telefon" placeholder="05xx xxx xx xx">
+            </div>
+            <div class="field">
+              <label for="hizmet">Hizmet Türü *</label>
+              <select id="hizmet" name="hizmet" required>
+                <option value="" disabled selected>Seçiniz</option>
+                <option>Web Sitesi Tasarımı</option>
+                <option>Yapay Zeka Destekli İçerik</option>
+                <option>Dijital Kurulum &amp; Destek</option>
+                <option>Birden Fazlası / Emin Değilim</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="butce">Tahmini Bütçe</label>
+              <select id="butce" name="butce">
+                <option value="" disabled selected>Seçiniz</option>
+                <option>10.000 ₺ altı</option>
+                <option>10.000 – 25.000 ₺</option>
+                <option>25.000 – 50.000 ₺</option>
+                <option>50.000 ₺ üzeri</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label for="ozet">Proje Özeti *</label>
+              <textarea id="ozet" name="ozet" placeholder="Ne yapmak istediğinizi kısaca anlatın..." required></textarea>
+            </div>
+            <div class="form-submit">
+              <button type="submit" class="btn-gold">Teklif Talebini Gönder</button>
+            </div>
+            <p class="form-note">Bilgileriniz yalnızca size dönüş yapmak için kullanılır.</p>
+            <p class="form-ok" id="formOk">✓ Teşekkürler! E-posta uygulamanız açılıyor — mesajı göndererek talebinizi tamamlayın.</p>
+          </div>
+        </form>
       </div>
     </div>
   </section>
@@ -342,6 +411,25 @@
   navLinks.querySelectorAll('a').forEach(a=>{
     a.addEventListener('click', ()=>{ navLinks.classList.remove('show'); menuBtn.classList.remove('open'); });
   });
+  const teklifForm = document.getElementById('teklifForm');
+  if (teklifForm) {
+    teklifForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const g = id => (document.getElementById(id).value || '—');
+      const konu = `Yeni Teklif Talebi — ${g('ad')}`;
+      const govde =
+        `Ad Soyad: ${g('ad')}\n` +
+        `İşletme / Firma: ${g('firma')}\n` +
+        `E-posta: ${g('email')}\n` +
+        `Telefon: ${g('telefon')}\n` +
+        `Hizmet Türü: ${g('hizmet')}\n` +
+        `Tahmini Bütçe: ${g('butce')}\n\n` +
+        `Proje Özeti:\n${g('ozet')}\n`;
+      window.location.href =
+        `mailto:bilgi@mustafakelleci.com?subject=${encodeURIComponent(konu)}&body=${encodeURIComponent(govde)}`;
+      document.getElementById('formOk').style.display = 'block';
+    });
+  }
 </script>
 </body>
 </html>
