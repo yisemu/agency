@@ -319,7 +319,10 @@
         </style>
         <h2>İşletmeniz, hak ettiği<br><span class="gold">dijital yeri</span> bekliyor.</h2>
         <p>Aşağıdaki formu doldurun; projenizi değerlendirip size en uygun yolu net bir şekilde çıkaralım.</p>
-        <form class="form-wrap" id="teklifForm">
+        <form class="form-wrap" id="teklifForm" action="https://api.web3forms.com/submit" method="POST">
+          <input type="hidden" name="access_key" value="d316e4c2-47c4-4dcd-97ae-6dead6548a87">
+          <input type="hidden" name="subject" value="byKELLECİ Studio — Yeni Teklif Talebi">
+          <input type="checkbox" name="botcheck" style="display:none;">
           <div class="form-grid">
             <div class="field">
               <label for="ad">Ad Soyad *</label>
@@ -413,21 +416,37 @@
   });
   const teklifForm = document.getElementById('teklifForm');
   if (teklifForm) {
-    teklifForm.addEventListener('submit', (e)=>{
+    teklifForm.addEventListener('submit', async (e)=>{
       e.preventDefault();
-      const g = id => (document.getElementById(id).value || '—');
-      const konu = `Yeni Teklif Talebi — ${g('ad')}`;
-      const govde =
-        `Ad Soyad: ${g('ad')}\n` +
-        `İşletme / Firma: ${g('firma')}\n` +
-        `E-posta: ${g('email')}\n` +
-        `Telefon: ${g('telefon')}\n` +
-        `Hizmet Türü: ${g('hizmet')}\n` +
-        `Tahmini Bütçe: ${g('butce')}\n\n` +
-        `Proje Özeti:\n${g('ozet')}\n`;
-      window.location.href =
-        `mailto:bilgi@mustafakelleci.com?subject=${encodeURIComponent(konu)}&body=${encodeURIComponent(govde)}`;
-      document.getElementById('formOk').style.display = 'block';
+      const okMsg = document.getElementById('formOk');
+      const submitBtn = teklifForm.querySelector('button[type="submit"]');
+      const eskiYazi = submitBtn.textContent;
+      submitBtn.textContent = 'Gönderiliyor...';
+      submitBtn.disabled = true;
+
+      try {
+        const formData = new FormData(teklifForm);
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          okMsg.textContent = '✓ Teşekkürler! Talebiniz alındı, en kısa sürede size dönüş yapacağız.';
+          okMsg.style.display = 'block';
+          teklifForm.reset();
+        } else {
+          okMsg.textContent = '⚠ Bir sorun oluştu. Lütfen tekrar deneyin veya bilgi@mustafakelleci.com adresine yazın.';
+          okMsg.style.display = 'block';
+        }
+      } catch (err) {
+        okMsg.textContent = '⚠ Bağlantı hatası. Lütfen tekrar deneyin veya bilgi@mustafakelleci.com adresine yazın.';
+        okMsg.style.display = 'block';
+      } finally {
+        submitBtn.textContent = eskiYazi;
+        submitBtn.disabled = false;
+      }
     });
   }
 </script>
