@@ -437,11 +437,11 @@
           okMsg.style.display = 'block';
           teklifForm.reset();
         } else {
-          okMsg.textContent = '⚠ Bir sorun oluştu. Lütfen tekrar deneyin veya bilgi@mustafakelleci.com adresine yazın.';
+          okMsg.textContent = '⚠ Web3Forms yanıtı: ' + (data.message || JSON.stringify(data));
           okMsg.style.display = 'block';
         }
       } catch (err) {
-        okMsg.textContent = '⚠ Bağlantı hatası. Lütfen tekrar deneyin veya bilgi@mustafakelleci.com adresine yazın.';
+        okMsg.textContent = '⚠ Bağlantı hatası: ' + (err.message || err);
         okMsg.style.display = 'block';
       } finally {
         submitBtn.textContent = eskiYazi;
